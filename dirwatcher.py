@@ -23,10 +23,10 @@ import argparse
 exit_flag = False
 
 # Sets up logging to console
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
-    '%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+    '%(asctime)s - %(levelname)s - %(name)s - %(process)d - %(message)s')
 stream = logging.StreamHandler()
 stream.setFormatter(formatter)
 logger.addHandler(stream)
@@ -43,7 +43,7 @@ def signal_handler(sig_num, frame):
     :return None
     """
     # log the associated signal name (the python3 way)
-    logger.warn('Received ' + signal.Signals(sig_num).name)
+    logger.warning('Received ' + signal.Signals(sig_num).name)
 
     global exit_flag
     exit_flag = True
@@ -68,11 +68,13 @@ def watch_dir(directory, magic, ext, interval):
         time.sleep(interval)
 
 
-def scan_file(filename, magic, line):
+def scan_file(filename, magic, start_line):
+    """Scans a given file to see if it contains the magic word, starting at
+       the last line scanned"""
     with open(filename, 'r') as f:
         scanning_line = 0
         for scanning_line, line in enumerate(f):
-            if scanning_line >= line:
+            if scanning_line >= start_line:
                 if magic in line:
                     logger.info(
                         f'Found {magic} in {scanning_line+1} of {filename}!')
@@ -90,8 +92,8 @@ def main():
     logger.info(
         '\n'
         f'{"*"*40}\n'
-        f'Starting {__name__}\n'
-        f'Process ID: {os.getpid}\n'
+        f'Starting {__file__}\n'
+        f'Process ID: {os.getpid()}\n'
         f'{"*"*40}\n'
     )
 
@@ -124,11 +126,16 @@ def main():
     uptime = datetime.datetime.now() - start_time
 
     logger.info(
+        '\n'
         f'{"*"*40}\n'
-        f'Stopped {__name__}...\n'
-        f'Total time: {uptime}\n'
+        f'Stopped {__file__}\n'
+        f'Total running time: {uptime}\n'
         f'{"*"*40}\n')
 
     # final exit point happens here
     # Log a message that we are shutting down
     # Include the overall uptime since program start.
+
+
+if __name__ == '__main__':
+    main()
