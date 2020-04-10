@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import argparse
+import os
+import time
+import datetime
+import logging
+import signal
+
+if sys.version_info[0] < 3:
+    raise Exception('Please use Python 3!')
 
 """Program to monitor directories and files for a magic keyphrase taken from a
    command line argument. If the magic phrase is found, a new message will be
@@ -10,14 +20,6 @@ __author__ = """chewh115, sighandler and main taken from assessment overview,
                 watched and coded along with Mike A's demo walk through
                 Formatter adapted from
                 https://www.programcreek.com/python/example/192/logging.Formatter"""
-
-
-import signal
-import logging
-import datetime
-import time
-import os
-import argparse
 
 # Globals
 exit_flag = False
@@ -91,10 +93,11 @@ def main():
     start_time = datetime.datetime.now()
     logger.info(
         '\n'
-        f'{"*"*40}\n'
+        '----------------------------------------\n'
         f'Starting {__file__}\n'
         f'Process ID: {os.getpid()}\n'
-        f'{"*"*40}\n'
+        f'Started at: {start_time}\n'
+        '----------------------------------------\n'
     )
 
     parser = argparse.ArgumentParser(
@@ -127,10 +130,10 @@ def main():
 
     logger.info(
         '\n'
-        f'{"*"*40}\n'
+        '----------------------------------------\n'
         f'Stopped {__file__}\n'
         f'Total running time: {uptime}\n'
-        f'{"*"*40}\n')
+        '----------------------------------------\n')
 
     # final exit point happens here
     # Log a message that we are shutting down
